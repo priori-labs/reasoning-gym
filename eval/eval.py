@@ -12,6 +12,7 @@ Options:
     --output-dir DIR          Override output directory specified in config
     --category CATEGORY       Evaluate only datasets from this category
     --max-concurrent NUM      Maximum number of concurrent API calls
+    --max-datasets NUM        Maximum number of concurrent dataset evaluations (default: unlimited)
     --n NUM                   Number of completions to generate per prompt (default: 1, each completion is a separate API call)
     --base-url URL            API base URL (default: https://openrouter.ai/api/v1)
     --save-metadata           Save entry metadata in results
@@ -56,7 +57,16 @@ class CheckpointManager:
         self.checkpoint_path = output_dir / "checkpoint.json"
         self.completed_datasets = set()
         self.previous_category_results = {}  # Store previously completed category results
+        self._lock: Optional[asyncio.Lock] = None  # Lock for thread-safe operations
         self.load_checkpoint()
+
+    def set_lock(self, lock: asyncio.Lock) -> None:
+        """Set the asyncio lock for thread-safe operations.
+
+        Args:
+            lock: asyncio.Lock instance to use for synchronization
+        """
+        self._lock = lock
 
     def load_checkpoint(self) -> None:
         """Load existing checkpoint and previous results if available."""
@@ -93,15 +103,20 @@ class CheckpointManager:
         """
         return f"{category}/{dataset}" in self.completed_datasets
 
-    def mark_dataset_completed(self, category: str, dataset: str) -> None:
+    async def mark_dataset_completed(self, category: str, dataset: str) -> None:
         """Mark a dataset as completed and update checkpoint file.
 
         Args:
             category: Category name
             dataset: Dataset name
         """
-        self.completed_datasets.add(f"{category}/{dataset}")
-        self._save_checkpoint()
+        if self._lock:
+            async with self._lock:
+                self.completed_datasets.add(f"{category}/{dataset}")
+                self._save_checkpoint()
+        else:
+            self.completed_datasets.add(f"{category}/{dataset}")
+            self._save_checkpoint()
 
     def get_dataset_result(self, category: str, dataset: str) -> Optional[dict[str, Any]]:
         """Get previously completed dataset result if available.
@@ -202,6 +217,9 @@ class AsyncModelEvaluator:
 
         # Concurrency control
         self.semaphore = asyncio.Semaphore(config.max_concurrent)
+        # Dataset-level concurrency (None = unlimited, set in evaluate_all when event loop is running)
+        self.dataset_semaphore: Optional[asyncio.Semaphore] = None
+        self.checkpoint_lock: Optional[asyncio.Lock] = None
 
         # Metadata
         self.git_hash = get_git_hash()
@@ -588,7 +606,7 @@ class AsyncModelEvaluator:
             }
 
             # Mark dataset as completed and save results
-            self.checkpoint_manager.mark_dataset_completed(category_name, dataset_name)
+            await self.checkpoint_manager.mark_dataset_completed(category_name, dataset_name)
             self._save_dataset_results(category_name, dataset_name, dataset_results)
 
             return dataset_results
@@ -606,6 +624,24 @@ class AsyncModelEvaluator:
                 "error": str(e),
                 "results": [],
             }
+
+    async def _evaluate_dataset_with_semaphore(
+        self, category_name: str, dataset_config: DatasetConfig
+    ) -> dict[str, Any]:
+        """Evaluate a dataset with optional semaphore for concurrency control.
+
+        Args:
+            category_name: Name of the category
+            dataset_config: Configuration for the dataset
+
+        Returns:
+            Dict with evaluation results
+        """
+        if self.dataset_semaphore is not None:
+            async with self.dataset_semaphore:
+                return await self.evaluate_dataset(category_name, dataset_config)
+        else:
+            return await self.evaluate_dataset(category_name, dataset_config)
 
     async def evaluate_category(self, category_config: CategoryConfig) -> dict[str, Any]:
         """Evaluate all datasets in a category.
@@ -634,15 +670,16 @@ class AsyncModelEvaluator:
                 "datasets": self.checkpoint_manager.previous_category_results[category_name],
             }
 
-        # Process datasets sequentially to ensure proper checkpointing
-        dataset_results = []
-        for dataset_config in category_config.datasets:
-            result = await self.evaluate_dataset(category_name, dataset_config)
-            dataset_results.append(result)
+        # Process datasets in parallel (concurrency controlled by dataset_semaphore if set)
+        tasks = [
+            self._evaluate_dataset_with_semaphore(category_name, dataset_config)
+            for dataset_config in category_config.datasets
+        ]
+        dataset_results = await asyncio.gather(*tasks)
 
         return {
             "name": category_name,
-            "datasets": dataset_results,
+            "datasets": list(dataset_results),
         }
 
     async def evaluate_all(self) -> dict[str, Any]:
@@ -653,9 +690,18 @@ class AsyncModelEvaluator:
         """
         self.logger.info(f"Starting evaluation of {len(self.config.categories)} categories")
 
+        # Initialize concurrency controls (must be done in async context)
+        self.checkpoint_lock = asyncio.Lock()
+        if self.config.max_datasets is not None:
+            self.dataset_semaphore = asyncio.Semaphore(self.config.max_datasets)
+            self.logger.info(f"Dataset concurrency limit: {self.config.max_datasets}")
+        else:
+            self.logger.info("Dataset concurrency: unlimited")
+
         # Initialize output directory and checkpoint manager
         self.output_dir = self.create_output_dir()
         self.checkpoint_manager = CheckpointManager(self.output_dir)
+        self.checkpoint_manager.set_lock(self.checkpoint_lock)
 
         # Process each category sequentially to ensure proper checkpointing
         category_results = []
@@ -826,6 +872,11 @@ async def main_async():
     parser.add_argument("--output-dir", help="Override output directory specified in config")
     parser.add_argument("--category", help="Evaluate only datasets from this category")
     parser.add_argument("--max-concurrent", type=int, help="Maximum number of concurrent API calls")
+    parser.add_argument(
+        "--max-datasets",
+        type=int,
+        help="Maximum number of concurrent dataset evaluations (default: unlimited)",
+    )
     parser.add_argument("--n", type=int, default=1, help="Number of completions to generate per prompt")
     parser.add_argument("--base-url", default="https://openrouter.ai/api/v1", help="API base URL")
     parser.add_argument(
@@ -870,6 +921,8 @@ async def main_async():
         config.output_dir = args.output_dir
     if args.max_concurrent:
         config.max_concurrent = args.max_concurrent
+    if args.max_datasets:
+        config.max_datasets = args.max_datasets
     if args.n:
         config.completions_per_prompt = args.n
     if args.save_metadata:

@@ -1,0 +1,30 @@
+{
+  "name": "acre",
+  "category": "induction",
+  "average_best_score": 0.0,
+  "average_mean_score": 0.0,
+  "total_examples": 1,
+  "config": {
+    "size": 1,
+    "seed": 45
+  },
+  "system_prompt": "Given a problem, your task is to answer the question by thinking step-by-step in a clear and specific manner.\nOnce you have thought about the reasoning process, provide the answer in the following format:\n<answer>answer here</answer>\nDo not explain your reasoning inside the answer tags, provide only the final answer. When an example is provided, you should strictly follow the format of the output/answer in that example.\n",
+  "completions_per_prompt": 1,
+  "results": [
+    {
+      "question": "You are a researcher studying causal relationships using Blicket experiments. In these experiments, certain objects (called 'blickets') have the hidden property of activating a detector, causing its light to turn on.\n\nEach example shows the results of placing different combinations of objects on the detector. Each object is described by color, material and shape. Your task is to determine whether a new combination of objects will cause the detector to activate.\n\nAfter observing the previous examples, respond with:\n- \"on\" if you can determine the detector light will turn on\n- \"off\" if you can determine the detector light will stay off\n- \"undetermined\" if there is insufficient evidence to reach a conclusion\n\nDo not use quotation marks in your answer.\n\nPrevious experimental results:\nred metal cylinder \u2192 off\nyellow metal cylinder \u2192 on\nyellow metal cylinder, red metal cylinder \u2192 on\ngray metal cube, blue metal cylinder \u2192 off\nblue metal cylinder, blue rubber cube \u2192 off\ngray rubber cylinder, blue metal cube, blue rubber cube, blue metal cylinder \u2192 on\n\nNew test case:\ngray rubber cylinder\n\nWhat is the detector light status?",
+      "expected_answer": "undetermined",
+      "best_model_answer": null,
+      "best_full_model_response": "undetermined",
+      "best_score": 0.0,
+      "mean_score": 0.0,
+      "completions": [
+        {
+          "model_answer": null,
+          "full_model_response": "undetermined",
+          "score": 0.0
+        }
+      ]
+    }
+  ]
+}

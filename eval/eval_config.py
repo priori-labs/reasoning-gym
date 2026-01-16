@@ -51,6 +51,7 @@ class EvalConfig:
     system_role: str = "system"  # Role for the system message (usually "system")
     output_dir: str = "results"  # Directory to save evaluation results
     max_concurrent: int = 10  # Maximum number of concurrent API calls
+    max_datasets: Optional[int] = None  # Maximum number of concurrent dataset evaluations (None = unlimited)
     default_size: int = 500  # Default dataset size if not specified for a dataset
     default_seed: Optional[int] = None  # Default random seed if not specified for a dataset
     save_metadata: bool = False  # Whether to include dataset entry metadata in results
@@ -170,6 +171,7 @@ class EvalConfig:
             system_role=config_data.get("system_role", "system"),
             output_dir=config_data.get("output_dir", "results"),
             max_concurrent=config_data.get("max_concurrent", 10),
+            max_datasets=config_data.get("max_datasets"),
             save_metadata=config_data.get("save_metadata", False),
             save_full_results=config_data.get("save_full_results", False),
             # Sampling parameters

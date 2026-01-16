@@ -50,3 +50,4 @@ htmlcov/
 wandb/
 outputs/
 *.log
+experiments/.env

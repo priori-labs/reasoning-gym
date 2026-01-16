@@ -1,0 +1,30 @@
+{
+  "name": "sudoku",
+  "category": "games",
+  "average_best_score": 0.0,
+  "average_mean_score": 0.0,
+  "total_examples": 1,
+  "config": {
+    "size": 1,
+    "seed": 45
+  },
+  "system_prompt": "Given a problem, your task is to answer the question by thinking step-by-step in a clear and specific manner.\nOnce you have thought about the reasoning process, provide the answer in the following format:\n<answer>answer here</answer>\nDo not explain your reasoning inside the answer tags, provide only the final answer. When an example is provided, you should strictly follow the format of the output/answer in that example.\n",
+  "completions_per_prompt": 1,
+  "results": [
+    {
+      "question": "Solve this Sudoku puzzle:\n_ 9 2 3 1 4 _ 7 _\n6 _ 3 8 7 _ 9 _ _\n4 _ _ _ 9 6 3 _ 1\n1 _ 7 _ 4 9 _ _ 3\n_ 5 _ 6 3 7 4 _ _\n3 _ 6 _ 8 2 _ 5 _\n5 _ 8 _ 6 3 1 4 7\n7 _ 1 4 _ _ _ _ 6\n9 6 4 7 _ _ 8 3 2\nRespond with only your answer, formatted as the puzzle, a 9x9 grid with numbers separated by spaces, and rows separated by newlines.",
+      "expected_answer": "8 9 2 3 1 4 6 7 5\n6 1 3 8 7 5 9 2 4\n4 7 5 2 9 6 3 8 1\n1 8 7 5 4 9 2 6 3\n2 5 9 6 3 7 4 1 8\n3 4 6 1 8 2 7 5 9\n5 2 8 9 6 3 1 4 7\n7 3 1 4 2 8 5 9 6\n9 6 4 7 5 1 8 3 2",
+      "best_model_answer": null,
+      "best_full_model_response": "8 9 2 3 1 4 6 7 5  \n6 1 3 8 7 5 9 2 4  \n4 7 5 2 9 6 3 8 1  \n1 8 7 5 4 9 2 6 3  \n2 5 9 6 3 7 4 1 8  \n3 4 6 1 8 2 7 5 9  \n5 2 8 9 6 3 1 4 7  \n7 3 1 4 2 8 5 9 6  \n9 6 4 7 5 1 8 3 2",
+      "best_score": 0.0,
+      "mean_score": 0.0,
+      "completions": [
+        {
+          "model_answer": null,
+          "full_model_response": "8 9 2 3 1 4 6 7 5  \n6 1 3 8 7 5 9 2 4  \n4 7 5 2 9 6 3 8 1  \n1 8 7 5 4 9 2 6 3  \n2 5 9 6 3 7 4 1 8  \n3 4 6 1 8 2 7 5 9  \n5 2 8 9 6 3 1 4 7  \n7 3 1 4 2 8 5 9 6  \n9 6 4 7 5 1 8 3 2",
+          "score": 0.0
+        }
+      ]
+    }
+  ]
+}

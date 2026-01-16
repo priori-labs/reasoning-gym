@@ -1,0 +1,30 @@
+{
+  "name": "simple_integration",
+  "category": "algebra",
+  "average_best_score": 0.0,
+  "average_mean_score": 0.0,
+  "total_examples": 1,
+  "config": {
+    "size": 1,
+    "seed": 45
+  },
+  "system_prompt": "Given a problem, your task is to answer the question by thinking step-by-step in a clear and specific manner.\nOnce you have thought about the reasoning process, provide the answer in the following format:\n<answer>answer here</answer>\nDo not explain your reasoning inside the answer tags, provide only the final answer. When an example is provided, you should strictly follow the format of the output/answer in that example.\n",
+  "completions_per_prompt": 1,
+  "results": [
+    {
+      "question": "Calculate the antiderivative: \u222b 16*X**7 - 5*X**4/3 + 10*X dx\nWhen performing calculations, please follow these guidelines:\n1. Use ** instead of ^ to represent exponents. For example, write 7*X**2 instead of 7*X^2.\n2. Always include the * symbol for all multiplication operations in your reasoning steps. For example, write `-3*X**3*sin(X) - 9*X**2*cos(X) + 18*X*sin(X) + 18*cos(X) + C` instead of `-3x3sin(x) - 9x2cos(x) + 18xsin(x) + 18cos(x) + C`.\n",
+      "expected_answer": "2*X**8 - X**5/3 + 5*X**2 + C",
+      "best_model_answer": "2*X**8 - 15/7*X**(7/3) + 5*X**2 + C",
+      "best_full_model_response": "<answer>2*X**8 - 15/7*X**(7/3) + 5*X**2 + C</answer>",
+      "best_score": 0.0,
+      "mean_score": 0.0,
+      "completions": [
+        {
+          "model_answer": "2*X**8 - 15/7*X**(7/3) + 5*X**2 + C",
+          "full_model_response": "<answer>2*X**8 - 15/7*X**(7/3) + 5*X**2 + C</answer>",
+          "score": 0.0
+        }
+      ]
+    }
+  ]
+}
