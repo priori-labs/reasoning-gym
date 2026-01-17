@@ -1,0 +1,68 @@
+# ARC-focused run with DeepSeek v3.2
+# 25 datasets × 10 entries = 250 base tasks
+# Run with: python -m synthetic_data.generate run --config synthetic_data/configs/arc_deepseek.yaml
+
+# Model settings
+# model: "deepseek/deepseek-v3.2"
+model: "x-ai/grok-4.1-fast"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings
+max_tokens: 4096
+timeout: 300
+
+# Concurrency settings
+max_concurrent: 50
+batch_size: 100
+
+# Dataset settings - Top 25 ARC-like datasets
+datasets:
+  # TIER 1: Most ARC-like
+  - "arc_agi"
+  - "rearc"
+  - "arc_1d"
+  - "manipulate_matrix"
+  - "rotate_matrix"
+  - "game_of_life"
+  - "spiral_matrix"
+  - "binary_matrix"
+  - "pool_matrix"
+  - "rotten_oranges"
+  - "modulo_grid"
+  - "rectangle_count"
+  - "largest_island"
+  - "kakurasu"
+  - "futoshiki"
+
+  # TIER 2: Very ARC-like
+  - "maze"
+  - "sokoban"
+  - "sudoku"
+  - "mini_sudoku"
+  - "rush_hour"
+  - "knight_swap"
+  - "color_cube_rotation"
+
+  # TIER 3: Moderately ARC-like
+  - "graph_color"
+  - "n_queens"
+  - "tower_of_hanoi"
+
+dataset_size: 2
+dataset_seed: 42
+
+# Single variation for this run (50 tasks total)
+prompt_templates:
+  - "step_by_step"
+temperatures:
+  - 0.4
+
+# Output settings
+db_path: "arc_deepseek.db"
+store_failures: true
+
+# Retry settings
+max_retries: 2
+base_delay: 1.0
+max_delay: 60.0
+backoff_factor: 2.0

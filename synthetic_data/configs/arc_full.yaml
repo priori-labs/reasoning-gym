@@ -1,0 +1,69 @@
+# Full ARC-focused run: 2,500 tasks with random variation
+# 25 datasets × 100 entries = 2,500 tasks (each with random template/temp)
+# Run with: python -m synthetic_data.generate run --config synthetic_data/configs/arc_full.yaml
+
+# Model settings
+model: "x-ai/grok-4.1-fast"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings
+max_tokens: 4096
+timeout: 300
+
+# Concurrency settings
+max_concurrent: 50
+batch_size: 100
+
+# Dataset settings - Top 25 ARC-like datasets
+datasets:
+  # TIER 1: Most ARC-like
+  - "arc_agi"
+  - "rearc"
+  - "arc_1d"
+  - "manipulate_matrix"
+  - "rotate_matrix"
+  - "game_of_life"
+  - "spiral_matrix"
+  - "binary_matrix"
+  - "pool_matrix"
+  - "rotten_oranges"
+  - "modulo_grid"
+  - "rectangle_count"
+  - "largest_island"
+  - "kakurasu"
+  - "futoshiki"
+
+  # TIER 2: Very ARC-like
+  - "maze"
+  - "sokoban"
+  - "sudoku"
+  - "mini_sudoku"
+  - "rush_hour"
+  - "knight_swap"
+  - "color_cube_rotation"
+
+  # TIER 3: Moderately ARC-like
+  - "graph_color"
+  - "n_queens"
+  - "tower_of_hanoi"
+
+dataset_size: 100  # 100 entries per dataset (or max available)
+dataset_seed: 42
+
+# Variation settings - random assignment per task
+prompt_templates: []  # Empty = use all 5 templates
+temperatures:
+  - 0.3
+  - 0.6
+  - 0.95
+random_variation: true  # Randomly assign template/temp per task
+
+# Output settings
+db_path: "arc_full.db"
+store_failures: true
+
+# Retry settings
+max_retries: 3
+base_delay: 1.0
+max_delay: 60.0
+backoff_factor: 2.0

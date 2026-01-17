@@ -1,0 +1,66 @@
+# ARC-focused configuration - Top 25 ARC-like datasets
+# These datasets focus on 2D grid transformations, spatial reasoning, and pattern recognition
+# Run with: python -m synthetic_data.generate run --config synthetic_data/configs/arc_focused.yaml
+
+# Model settings
+model: "x-ai/grok-4.1-fast"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings
+max_tokens: 4096
+timeout: 300 # seconds
+
+# Concurrency settings
+max_concurrent: 50 # Maximum concurrent API calls
+batch_size: 100 # Tasks to fetch per batch
+
+# Dataset settings - Top 25 ARC-like datasets organized by similarity
+datasets:
+  # TIER 1: Most ARC-like (direct grid transformations, pattern recognition)
+  - "arc_agi" # Actual ARC-AGI grid transformation tasks
+  - "rearc" # Procedurally generated ARC-style tasks
+  - "arc_1d" # 1D version of ARC transformations
+  - "manipulate_matrix" # Matrix manipulation (rotate, flip, transpose)
+  - "rotate_matrix" # 2D rotation operations
+  - "game_of_life" # Cellular automata state prediction
+  - "spiral_matrix" # Spiral traversal patterns
+  - "binary_matrix" # Binary grid operations
+  - "pool_matrix" # Max/avg pooling on grids
+  - "rotten_oranges" # Grid propagation/BFS
+  - "modulo_grid" # Pattern inference on 2D grids
+  - "rectangle_count" # Counting shapes in grids
+  - "largest_island" # Connected component analysis
+  - "kakurasu" # Logic puzzle on grid
+  - "futoshiki" # Latin square with constraints
+
+  # TIER 2: Very ARC-like (spatial reasoning, navigation, planning)
+  - "maze" # 2D pathfinding
+  - "sokoban" # Box-pushing spatial planning
+  - "sudoku" # 9x9 constraint satisfaction
+  - "mini_sudoku" # 4x4 constraint satisfaction
+  - "rush_hour" # Sliding block puzzle
+  - "knight_swap" # Chess piece movement puzzle
+  - "color_cube_rotation" # 3D spatial reasoning
+
+  # TIER 3: Moderately ARC-like (graph/structure reasoning)
+  - "graph_color" # Graph coloring (adjacency constraints)
+  - "n_queens" # Constraint-based placement
+  - "tower_of_hanoi" # Sequential state transformations
+
+dataset_size: 50 # Number of entries per dataset
+dataset_seed: 42 # Random seed for reproducibility
+
+# Variation settings (5 templates x 2 temperatures = 10 variations per entry)
+# 25 datasets × 50 entries × 10 variations = 12,500 total generations
+prompt_templates: [] # Empty = use all 5 templates
+temperatures: [] # Empty = use default [0.4, 0.7]
+
+# Output settings
+db_path: "arc_generation.db"
+store_failures: true # Store failed attempts for analysis
+
+# Retry settings
+max_retries: 5
+base_delay: 1.0 # Base delay for exponential backoff
+max_delay: 60.0 # Maximum delay between retries
+backoff_factor: 2.0 # Multiplier for exponential backoff

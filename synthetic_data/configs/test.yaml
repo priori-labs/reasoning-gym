@@ -1,0 +1,46 @@
+# Test configuration - 10 samples for quick inspection
+# Run with: python -m synthetic_data.generate run --config synthetic_data/configs/test.yaml
+
+# Model settings
+model: "x-ai/grok-4.1-fast"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings
+max_tokens: 4096
+timeout: 300
+
+# Concurrency settings
+max_concurrent: 5   # Lower concurrency for testing
+batch_size: 10
+
+# Dataset settings - Sample of top ARC-like datasets for testing
+datasets:
+  - "arc_agi"           # Actual ARC-AGI grid transformation tasks
+  - "rearc"             # Procedurally generated ARC-style tasks
+  - "manipulate_matrix" # Matrix manipulation (rotate, flip, transpose)
+  - "game_of_life"      # Cellular automata state prediction
+  - "modulo_grid"       # Pattern inference on 2D grids
+  - "maze"              # 2D pathfinding
+  - "sokoban"           # Box-pushing spatial planning
+  - "sudoku"            # Constraint satisfaction
+  - "rectangle_count"   # Counting shapes in grids
+  - "largest_island"    # Connected component analysis
+dataset_size: 1         # 1 entry each = 10 total tasks
+dataset_seed: 42
+
+# Variation settings - use only 1 template and 1 temperature for testing
+# This gives us 10 tasks total (2 datasets x 5 entries x 1 template x 1 temp)
+prompt_templates:
+  - "step_by_step"
+temperatures:
+  - 0.4
+
+# Output settings
+db_path: "test_generation.db"
+store_failures: true
+
+# Retry settings
+max_retries: 3
+base_delay: 1.0
+max_delay: 30.0
+backoff_factor: 2.0
