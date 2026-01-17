@@ -59,7 +59,7 @@ temperatures:
 random_variation: true  # Randomly assign template/temp per task
 
 # Output settings
-db_path: "arc_full.db"
+db_path: "synthetic_data/outputs/arc_full.db"
 store_failures: true
 
 # Retry settings

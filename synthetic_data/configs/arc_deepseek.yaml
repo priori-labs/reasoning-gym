@@ -58,7 +58,7 @@ temperatures:
   - 0.4
 
 # Output settings
-db_path: "arc_deepseek.db"
+db_path: "synthetic_data/outputs/arc_deepseek.db"
 store_failures: true
 
 # Retry settings

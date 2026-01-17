@@ -180,7 +180,7 @@ def cmd_resume(args: argparse.Namespace) -> int:
         return 1
 
     # Load database
-    db_path = Path(args.db_path) if args.db_path else Path("generation.db")
+    db_path = Path(args.db_path) if args.db_path else Path("synthetic_data/outputs/generation.db")
     db = DatabaseManager(db_path)
 
     # Get run info
@@ -268,7 +268,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
     run_id = args.run_id
 
     # Load database
-    db_path = Path(args.db_path) if args.db_path else Path("generation.db")
+    db_path = Path(args.db_path) if args.db_path else Path("synthetic_data/outputs/generation.db")
     db = DatabaseManager(db_path)
 
     # Get run info
@@ -364,7 +364,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     format = args.format
 
     # Load database
-    db_path = Path(args.db_path) if args.db_path else Path("generation.db")
+    db_path = Path(args.db_path) if args.db_path else Path("synthetic_data/outputs/generation.db")
     db = DatabaseManager(db_path)
 
     # Get run info
@@ -388,7 +388,7 @@ def cmd_export(args: argparse.Namespace) -> int:
 def cmd_list(args: argparse.Namespace) -> int:
     """List all runs."""
     # Load database
-    db_path = Path(args.db_path) if args.db_path else Path("generation.db")
+    db_path = Path(args.db_path) if args.db_path else Path("synthetic_data/outputs/generation.db")
 
     if not db_path.exists():
         logger.info("No database found. No runs to list.")

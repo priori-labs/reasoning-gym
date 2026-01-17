@@ -51,3 +51,6 @@ wandb/
 outputs/
 *.log
 experiments/.env
+
+# Synthetic data outputs
+synthetic_data/outputs/

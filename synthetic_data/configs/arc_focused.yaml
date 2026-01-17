@@ -56,7 +56,7 @@ prompt_templates: [] # Empty = use all 5 templates
 temperatures: [] # Empty = use default [0.4, 0.7]
 
 # Output settings
-db_path: "arc_generation.db"
+db_path: "synthetic_data/outputs/arc_generation.db"
 store_failures: true # Store failed attempts for analysis
 
 # Retry settings

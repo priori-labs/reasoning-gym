@@ -23,7 +23,7 @@ prompt_templates: []  # Empty = use all templates
 temperatures: []      # Empty = use default [0.4, 0.7]
 
 # Output settings
-db_path: "generation.db"
+db_path: "synthetic_data/outputs/generation.db"
 store_failures: true  # Store failed attempts for analysis
 
 # Retry settings

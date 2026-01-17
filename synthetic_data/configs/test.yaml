@@ -36,7 +36,7 @@ temperatures:
   - 0.4
 
 # Output settings
-db_path: "test_generation.db"
+db_path: "synthetic_data/outputs/test_generation.db"
 store_failures: true
 
 # Retry settings
