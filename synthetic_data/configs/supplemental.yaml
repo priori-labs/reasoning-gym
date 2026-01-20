@@ -1,0 +1,57 @@
+# Supplemental generation config: Re-test failed samples with a stronger teacher model
+#
+# This config generates responses for entries that:
+# 1. Failed in the original arc_full.db run (Grok 4.1 Fast got them wrong)
+# 2. Were never tested (missing from original run)
+#
+# The teacher model's responses become the new reference answers.
+#
+# Run with:
+#   python -m synthetic_data.generate_supplemental --config synthetic_data/configs/supplemental.yaml
+#
+# Or resume an interrupted run:
+#   python -m synthetic_data.generate_supplemental --resume <run-id>
+
+# Source database (contains the original run results)
+source_db_path: "synthetic_data/outputs/arc_full.db"
+
+# Output database (will contain supplemental teacher responses)
+output_db_path: "synthetic_data/outputs/arc_full_supplemental.db"
+
+# Teacher model settings - use a stronger model for higher quality
+# Options: anthropic/claude-sonnet-4-20250514, openai/gpt-4o, google/gemini-2.0-flash-thinking-exp
+model: "anthropic/claude-sonnet-4-20250514"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings - more generous for teacher model
+max_tokens: 8192
+timeout: 300
+
+# Concurrency - lower for expensive models
+max_concurrent: 20
+batch_size: 50
+
+# Dataset settings - must match the original arc_full config
+dataset_size: 100
+dataset_seed: 42
+
+# What to include in supplemental generation
+include_failed: true   # Entries where Grok got the wrong answer
+include_missing: true  # Entries that were never tested (should be none for arc_full)
+
+# Prompt settings - use one high-quality template for consistency
+prompt_template: "chain_of_thought"
+temperature: 0.3  # Lower for more deterministic teacher output
+
+# Retry settings
+max_retries: 5
+base_delay: 1.0
+max_delay: 60.0
+backoff_factor: 2.0
+
+# Note: datasets list is hardcoded in the script to match arc_full.yaml:
+# arc_agi, rearc, arc_1d, manipulate_matrix, rotate_matrix, game_of_life,
+# spiral_matrix, binary_matrix, pool_matrix, rotten_oranges, modulo_grid,
+# rectangle_count, largest_island, kakurasu, futoshiki, maze, sokoban,
+# sudoku, mini_sudoku, rush_hour, knight_swap, color_cube_rotation,
+# graph_color, n_queens, tower_of_hanoi
