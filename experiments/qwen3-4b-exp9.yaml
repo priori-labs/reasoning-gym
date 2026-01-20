@@ -1,0 +1,54 @@
+# Reasoning-gym eval config for Qwen3-4B CPT/SFT experiments
+# Focused on ARC-related tasks and reasoning puzzles
+model: Qwen/Qwen3-4B
+provider: null
+output_dir: experiments/results
+max_concurrent: 64
+default_size: 50
+default_seed: 45
+temperature: 0.6
+max_tokens: 4096
+
+categories:
+# ARC-related tasks (primary focus - trained on these)
+- category: arc
+  datasets:
+  - dataset: arc_1d
+  - dataset: arc_agi
+  - dataset: rearc
+
+# Logic puzzles (related to ARC reasoning)
+- category: logic
+  datasets:
+  - dataset: aiw
+  - dataset: knights_knaves
+  - dataset: propositional_logic
+  - dataset: syllogism
+  - dataset: zebra_puzzles
+
+# Algorithmic tasks (pattern recognition)
+- category: algorithmic
+  datasets:
+  - dataset: number_sorting
+  - dataset: number_filtering
+  - dataset: binary_matrix
+  - dataset: manipulate_matrix
+
+# Games/puzzles requiring step-by-step reasoning
+- category: games
+  datasets:
+  - dataset: puzzle24
+  - dataset: tower_of_hanoi
+  - dataset: n_queens
+
+# Arithmetic (transfer test)
+- category: arithmetic
+  datasets:
+  - dataset: basic_arithmetic
+  - dataset: chain_sum
+
+# Induction (key for ARC)
+- category: induction
+  datasets:
+  - dataset: acre
+  - dataset: list_functions

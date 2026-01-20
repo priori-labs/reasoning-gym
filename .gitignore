@@ -54,3 +54,6 @@ experiments/.env
 
 # Synthetic data outputs
 synthetic_data/outputs/
+
+# Experiment results
+experiments/results/

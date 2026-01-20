@@ -1,0 +1,18 @@
+# Quick test config - 5 datasets, 1 sample each
+model: Qwen/Qwen3-4B
+provider: null
+output_dir: experiments/results
+max_concurrent: 10
+default_size: 1
+default_seed: 42
+temperature: 0.6
+max_tokens: 4096
+
+categories:
+- category: quick_test
+  datasets:
+  - dataset: arc_1d
+  - dataset: basic_arithmetic
+  - dataset: chain_sum
+  - dataset: knights_knaves
+  - dataset: number_sorting
