@@ -1,0 +1,48 @@
+# Quick test for Exp13 - focus on puzzle-related datasets
+model: Qwen/Qwen3-1.7B
+provider: null
+output_dir: experiments/results
+max_concurrent: 32
+default_size: 10
+default_seed: 42
+temperature: 0.6
+max_tokens: 4096
+
+categories:
+# ARC-like tasks (should improve with puzzle CPT)
+- category: arc
+  datasets:
+  - dataset: arc_1d
+  - dataset: arc_agi
+  - dataset: rearc
+
+# Logic puzzles (similar to training data)
+- category: logic
+  datasets:
+  - dataset: knights_knaves
+  - dataset: propositional_logic
+  - dataset: syllogism
+  - dataset: zebra_puzzles
+
+# Games/puzzles (similar to training data)
+- category: games
+  datasets:
+  - dataset: maze
+  - dataset: mini_sudoku
+  - dataset: n_queens
+  - dataset: sokoban
+  - dataset: tower_of_hanoi
+
+# Cognition/spatial (similar to training data)
+- category: cognition
+  datasets:
+  - dataset: color_cube_rotation
+  - dataset: modulo_grid
+  - dataset: number_sequence
+
+# Arithmetic (control - should NOT improve much)
+- category: arithmetic_control
+  datasets:
+  - dataset: basic_arithmetic
+  - dataset: chain_sum
+  - dataset: gsm_symbolic
