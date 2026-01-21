@@ -1,12 +1,13 @@
-# Full evaluation config - all 101 datasets, 10 samples each
-model: Qwen/Qwen3-4B
+# Full baseline evaluation - Qwen3-1.7B on all 101 datasets
+# Larger sample size (50 per dataset) for better statistical power
+model: Qwen/Qwen3-1.7B
 provider: null
-output_dir: experiments/results
-max_concurrent: 64
-default_size: 10
+output_dir: experiments/results/qwen3-1.7b-full-baseline
+max_concurrent: 32
+default_size: 50
 default_seed: 42
 temperature: 0.6
-max_tokens: null  # Let model generate until context limit - avoids hard failures on long prompts
+max_tokens: null  # Let model generate until context limit
 
 categories:
 - category: algebra

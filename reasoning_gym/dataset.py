@@ -67,9 +67,104 @@ class ProceduralDataset(ABC, Sized, Iterable[dict[str, Any]]):
         if isinstance(answer, str) and len(answer) > 0:
             if answer == oracle_answer:
                 reward = 1.0
-            elif oracle_answer in answer:
-                reward = len(oracle_answer) / len(answer)
+            elif self._normalize_answer(answer) == self._normalize_answer(str(oracle_answer)):
+                # Normalized match (handles whitespace, quotes, numeric formats)
+                reward = 1.0
+            elif self._is_equivalent_boolean(answer, str(oracle_answer)):
+                # Boolean equivalence (True/true/TRUE, Yes/yes, etc.)
+                reward = 1.0
+            elif str(oracle_answer) in answer:
+                reward = len(str(oracle_answer)) / len(answer)
         return reward
+
+    @staticmethod
+    def _is_equivalent_boolean(a: str, b: str) -> bool:
+        """Check if two strings represent equivalent boolean values."""
+        true_values = {'true', 'yes', '1', 't', 'y'}
+        false_values = {'false', 'no', '0', 'f', 'n'}
+        none_values = {'none', 'null', 'nil', 'na', 'n/a'}
+
+        a_lower = a.strip().lower()
+        b_lower = b.strip().lower()
+
+        if a_lower in true_values and b_lower in true_values:
+            return True
+        if a_lower in false_values and b_lower in false_values:
+            return True
+        if a_lower in none_values and b_lower in none_values:
+            return True
+        return False
+
+    @staticmethod
+    def _normalize_answer(answer: str) -> str:
+        """Normalize answer string for more lenient comparison.
+
+        Handles:
+        - Whitespace normalization
+        - Quote style (single vs double)
+        - Numeric format (84 vs 84.0, trailing zeros)
+        - JSON spacing
+        - Lists of strings vs lists of numbers
+        """
+        import json
+
+        if not answer:
+            return answer
+
+        s = answer.strip()
+
+        # Try to normalize as a simple number first
+        try:
+            num = float(s.replace(',', ''))
+            # Return as int if it's a whole number
+            if num.is_integer():
+                return str(int(num))
+            return str(num)
+        except ValueError:
+            pass
+
+        # Normalize single quotes to double quotes for JSON parsing
+        s_normalized = s.replace("'", '"')
+
+        # Try to parse as JSON and re-serialize for canonical form
+        try:
+            parsed = json.loads(s_normalized)
+            # Recursively normalize values in lists/dicts
+            normalized = ProceduralDataset._normalize_json_values(parsed)
+            return json.dumps(normalized, sort_keys=True, separators=(',', ':'))
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        # Normalize whitespace in non-JSON strings
+        s = ' '.join(s.split())
+
+        # Normalize quote styles for simple cases
+        s = s.replace("'", '"')
+
+        return s
+
+    @staticmethod
+    def _normalize_json_values(obj):
+        """Recursively normalize JSON values - convert numeric strings to numbers."""
+        if isinstance(obj, list):
+            return [ProceduralDataset._normalize_json_values(item) for item in obj]
+        elif isinstance(obj, dict):
+            return {k: ProceduralDataset._normalize_json_values(v) for k, v in obj.items()}
+        elif isinstance(obj, str):
+            # Try to convert string to number
+            try:
+                num = float(obj)
+                if num.is_integer():
+                    return int(num)
+                return num
+            except ValueError:
+                return obj
+        elif isinstance(obj, float):
+            # Normalize floats that are whole numbers to ints
+            if obj.is_integer():
+                return int(obj)
+            return obj
+        return obj
 
 
 T = TypeVar("T", bound="ProceduralDataset")

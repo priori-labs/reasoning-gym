@@ -16,6 +16,20 @@ Once you have thought about the reasoning process, provide the answer in the fol
 <answer>answer here</answer>
 Do not explain your reasoning inside the answer tags, provide only the final answer. When an example is provided, you should strictly follow the format of the output/answer in that example.
 """,
+    "thinking": """You are a helpful assistant that solves problems step by step.
+
+IMPORTANT: You MUST format your response as follows:
+1. First, think through the problem inside <think>...</think> tags
+2. Then, provide ONLY your final answer inside <answer>...</answer> tags
+
+Example format:
+<think>
+[Your reasoning here]
+</think>
+<answer>[Your final answer here, no explanation]</answer>
+
+The answer tags are REQUIRED - do not skip them. Match the exact format requested in the problem.
+""",
     "simple": "You are a helpful assistant that answers questions accurately and concisely. When asked to solve a problem, show your work step by step. Provide your final answer between <answer> and </answer> tags.",
     "direct": "Answer the question directly. Provide your answer between <answer> and </answer> tags. Do not return any preamble, explanation, or reasoning.",
     "chain_of_draft": "Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. Return the answer at the end of the response enclosed in <answer> </answer> tags.",
@@ -23,20 +37,63 @@ Do not explain your reasoning inside the answer tags, provide only the final ans
 
 
 def extract_answer(completion: str, tag_name: str = "answer", strip: bool = True) -> Optional[str]:
+    """Extract answer from model completion with multiple fallback strategies.
+
+    Strategy order:
+    1. Look for <answer>...</answer> tags (standard format)
+    2. Look for content after </think> tag (common with thinking models)
+    3. Look for JSON/list/grid at the end of response
+    """
+    if not completion:
+        return None
+
+    # Strategy 1: Standard <answer> tags
     regex = f"<{tag_name}>\\s?(.*?)\\s?</{tag_name}>"
     matches = list(
         re.finditer(
             regex,
             completion,
-            flags=re.DOTALL,
+            flags=re.DOTALL | re.IGNORECASE,
         )
     )
-    if not matches:
-        return None
-    answer = matches[-1].group(1)
-    if strip:
-        answer = answer.strip()
-    return answer
+    if matches:
+        answer = matches[-1].group(1)
+        if strip:
+            answer = answer.strip()
+        return answer
+
+    # Strategy 2: Content after </think> tag
+    think_end_match = re.search(r'</think>\s*(.+)$', completion, flags=re.DOTALL | re.IGNORECASE)
+    if think_end_match:
+        after_think = think_end_match.group(1).strip()
+        if after_think:
+            # Check if it's wrapped in other tags we should extract from
+            inner_match = re.search(r'<(\w+)>\s*(.*?)\s*</\1>$', after_think, flags=re.DOTALL)
+            if inner_match:
+                return inner_match.group(2).strip() if strip else inner_match.group(2)
+            return after_think
+
+    # Strategy 3: Look for structured data at the end (JSON, lists, grids)
+    # Try to find JSON object/array at end
+    json_match = re.search(r'(\{[^{}]*\}|\[[^\[\]]*\])\s*$', completion)
+    if json_match:
+        return json_match.group(1).strip() if strip else json_match.group(1)
+
+    # Look for grid-like output (multiple lines of similar structure at the end)
+    lines = completion.strip().split('\n')
+    if len(lines) >= 2:
+        # Check if last few lines look like a grid (numbers/chars separated by spaces)
+        potential_grid = []
+        for line in reversed(lines):
+            line = line.strip()
+            if re.match(r'^[\d\s\.,\-]+$', line) or re.match(r'^[A-Za-z\s]+$', line):
+                potential_grid.insert(0, line)
+            else:
+                break
+        if len(potential_grid) >= 2:
+            return '\n'.join(potential_grid)
+
+    return None
 
 
 def format_number(num: Union[int, float], max_decimals: int = 2, round_if_needed: bool = False) -> str:
