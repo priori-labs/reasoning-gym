@@ -1,0 +1,167 @@
+# Full dataset run: All 105 reasoning-gym datasets
+# 105 datasets × 100 entries = 10,500 tasks (with random variation)
+# Run with: python -m synthetic_data.generate run --config synthetic_data/configs/full_dataset.yaml
+
+# Model settings
+model: "x-ai/grok-4.1-fast"
+base_url: "https://openrouter.ai/api/v1"
+
+# Generation settings
+max_tokens: 4096
+timeout: 300
+
+# Concurrency settings
+max_concurrent: 100
+batch_size: 100
+
+# Dataset settings - All 105 reasoning-gym datasets
+datasets:
+  # Algebra & Arithmetic
+  - "basic_arithmetic"
+  - "bitwise_arithmetic"
+  - "complex_arithmetic"
+  - "decimal_arithmetic"
+  - "decimal_chain_sum"
+  - "chain_sum"
+  - "fraction_simplification"
+  - "polynomial_equations"
+  - "polynomial_multiplication"
+  - "simple_equations"
+  - "base_conversion"
+  - "gcd"
+  - "lcm"
+  - "power_function"
+  - "prime_factorization"
+  - "count_primes"
+  - "count_bits"
+  - "products"
+
+  # ARC-like & Grid Tasks
+  - "arc_agi"
+  - "arc_1d"
+  - "rearc"
+  - "manipulate_matrix"
+  - "rotate_matrix"
+  - "spiral_matrix"
+  - "binary_matrix"
+  - "pool_matrix"
+  - "modulo_grid"
+  - "game_of_life"
+  - "game_of_life_halting"
+  - "rectangle_count"
+  - "largest_island"
+  - "rotten_oranges"
+
+  # Puzzles & Games
+  - "sudoku"
+  - "mini_sudoku"
+  - "futoshiki"
+  - "kakurasu"
+  - "survo"
+  - "maze"
+  - "sokoban"
+  - "rush_hour"
+  - "knight_swap"
+  - "n_queens"
+  - "tower_of_hanoi"
+  - "puzzle24"
+  - "countdown"
+  - "jugs"
+  - "rubiks_cube"
+  - "color_cube_rotation"
+  - "boxnet"
+  - "mahjong_puzzle"
+  - "tsumego"
+
+  # Logic & Reasoning
+  - "propositional_logic"
+  - "syllogism"
+  - "knights_knaves"
+  - "zebra_puzzles"
+  - "circuit_logic"
+  - "quantum_lock"
+  - "self_reference"
+  - "family_relationships"
+  - "coin_flip"
+  - "dice"
+
+  # Graph & Pathfinding
+  - "graph_color"
+  - "shortest_path"
+  - "course_schedule"
+
+  # String & Text
+  - "letter_counting"
+  - "letter_jumble"
+  - "word_sorting"
+  - "word_ladder"
+  - "word_sequence_reversal"
+  - "sentence_reordering"
+  - "spell_backward"
+  - "string_insertion"
+  - "string_manipulation"
+  - "string_splitting"
+  - "string_synthesis"
+  - "palindrome_generation"
+  - "palindrome_partitioning"
+  - "isomorphic_strings"
+  - "group_anagrams"
+  - "ransom_note"
+  - "figlet_font"
+  - "caesar_cipher"
+  - "cryptarithm"
+  - "emoji_mystery"
+
+  # Numbers & Sequences
+  - "number_filtering"
+  - "number_format"
+  - "number_sequence"
+  - "number_sorting"
+  - "binary_alternation"
+  - "list_functions"
+
+  # Geometry & Math
+  - "simple_geometry"
+  - "advanced_geometry"
+  - "simple_integration"
+  - "intermediate_integration"
+
+  # Reading Comprehension & Language
+  - "aiw"
+  - "needle_haystack"
+  - "leg_counting"
+  - "acre"
+  - "ab"
+
+  # Calendar & Time
+  - "calendar_arithmetic"
+  - "time_intervals"
+
+  # Code & Programming
+  - "bf"
+  - "codeio"
+  # - "composite"  # Meta-dataset, requires special config
+
+  # Math Word Problems
+  - "gsm_symbolic"
+
+dataset_size: 100  # 100 entries per dataset (or max available)
+dataset_seed: 42
+
+# Variation settings - random assignment per task
+prompt_templates: []  # Empty = use all 5 templates
+temperatures:
+  - 0.3
+  - 0.6
+  - 0.95
+random_variation: true  # Randomly assign template/temp per task
+
+# Output settings
+db_path: "synthetic_data/outputs/full_dataset.db"
+store_failures: true
+
+# Retry settings - single attempt only (no retries)
+max_retries: 1
+base_delay: 1.0
+max_delay: 60.0
+backoff_factor: 2.0
